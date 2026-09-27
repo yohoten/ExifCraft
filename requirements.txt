@@ -1,0 +1,8 @@
+piexif==1.1.3
+Pillow==10.2.0
+tkintermapview==1.30
+tkcalendar==1.6.1
+
+# Optional — only needed to regenerate ExifCraft.ico / ExifCraft.png
+# from app_icon.svg via `python make_icon.py`. Not required to run the app.
+PyMuPDF==1.26.5
