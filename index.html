@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ExifCraft · Professional EXIF Editor</title>
+<meta name="description" content="ExifCraft — 一个干净、现代的图片元数据（EXIF）读写工具。批量读写 GPS、相机、曝光参数与拍摄时间，支持地图选点与 CSV 导出。">
+<link rel="icon" href="ExifCraft.ico">
+<style>
+  :root {
+    --bg: #F4F6FA;
+    --surface: #FFFFFF;
+    --surface-2: #F8FAFC;
+    --border: #E2E8F0;
+    --border-focus: #CBD5E1;
+    --primary: #2563EB;
+    --primary-h: #1D4ED8;
+    --primary-soft: #DBEAFE;
+    --text: #0F172A;
+    --text-2: #475569;
+    --text-3: #94A3B8;
+    --success: #059669;
+    --radius: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: "Segoe UI", "SF Pro Text", "Inter", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 0 24px; }
+
+  /* ---------- Header ---------- */
+  header {
+    position: sticky; top: 0; z-index: 10;
+    background: rgba(244, 246, 250, .85);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav {
+    display: flex; align-items: center; gap: 16px;
+    padding: 14px 0;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 17px; }
+  .brand .logo {
+    width: 26px; height: 26px; border-radius: 7px;
+    background: var(--primary); color: #fff;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+  }
+  .nav .tag { color: var(--text-3); font-size: 13px; }
+  .nav .spacer { flex: 1; }
+  .nav a {
+    color: var(--text-2); text-decoration: none; font-size: 14px;
+    padding: 6px 12px; border-radius: 8px; transition: all .15s ease;
+  }
+  .nav a:hover { color: var(--primary-h); background: var(--surface); }
+  .nav a.btn {
+    background: var(--primary); color: #fff; font-weight: 600;
+  }
+  .nav a.btn:hover { background: var(--primary-h); }
+
+  /* ---------- Hero ---------- */
+  .hero { padding: 72px 0 40px; text-align: center; }
+  .hero .badge {
+    display: inline-block; padding: 4px 14px; border-radius: 999px;
+    background: var(--primary-soft); color: var(--primary-h);
+    font-size: 13px; font-weight: 600; margin-bottom: 18px;
+  }
+  .hero h1 { font-size: 44px; font-weight: 700; letter-spacing: -0.5px; }
+  .hero h1 .accent { color: var(--primary); }
+  .hero p.sub {
+    max-width: 620px; margin: 14px auto 0;
+    color: var(--text-2); font-size: 17px;
+  }
+  .hero .cta { margin-top: 28px; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--primary); color: #fff; text-decoration: none;
+    padding: 12px 24px; border-radius: 10px; font-weight: 600;
+    transition: background .15s ease;
+  }
+  .btn-primary:hover { background: var(--primary-h); }
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--surface); color: var(--text); text-decoration: none;
+    padding: 12px 24px; border-radius: 10px; font-weight: 500;
+    border: 1px solid var(--border-focus); transition: all .15s ease;
+  }
+  .btn-ghost:hover { border-color: var(--primary); color: var(--primary-h); }
+
+  /* ---------- Screenshot ---------- */
+  .shot { margin: 48px 0 0; }
+  .shot img {
+    width: 100%; display: block;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 50px -20px rgba(15, 23, 42, .25);
+  }
+
+  /* ---------- Sections ---------- */
+  section { padding: 72px 0; }
+  section h2 { font-size: 28px; font-weight: 700; text-align: center; }
+  section p.lead { text-align: center; color: var(--text-2); margin-top: 8px; }
+
+  /* Features */
+  .grid {
+    margin-top: 40px;
+    display: grid; gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 22px;
+    transition: border-color .15s ease, transform .15s ease;
+  }
+  .card:hover { border-color: var(--primary); transform: translateY(-2px); }
+  .card .icon { font-size: 22px; }
+  .card h3 { font-size: 16px; margin: 10px 0 6px; }
+  .card p { font-size: 14px; color: var(--text-2); }
+
+  /* Code blocks */
+  .code {
+    background: #0F172A; color: #E2E8F0;
+    border-radius: var(--radius); padding: 20px 24px;
+    font-family: Consolas, Menlo, "JetBrains Mono", monospace;
+    font-size: 14px; line-height: 1.8;
+    margin: 24px 0 0; overflow-x: auto;
+  }
+  .code .c { color: #94A3B8; }
+  .code .p { color: #7DD3FC; }
+
+  .steps { margin-top: 32px; display: grid; gap: 12px; }
+  .step {
+    display: flex; gap: 14px; align-items: flex-start;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 16px 20px;
+  }
+  .step .n {
+    flex: none; width: 26px; height: 26px; border-radius: 50%;
+    background: var(--primary-soft); color: var(--primary-h);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
+  }
+  .step p { font-size: 15px; color: var(--text-2); }
+  .step p strong { color: var(--text); }
+
+  /* Footer */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 0; text-align: center;
+    color: var(--text-3); font-size: 14px;
+  }
+  footer a { color: var(--text-2); text-decoration: none; }
+  footer a:hover { color: var(--primary-h); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <span class="brand"><span class="logo">E</span>ExifCraft</span>
+    <span class="tag">v2.1</span>
+    <span class="spacer"></span>
+    <a href="#features">功能</a>
+    <a href="#start">快速开始</a>
+    <a href="#usage">使用</a>
+    <a class="btn" href="https://github.com/yohoten/ExifCraft" target="_blank" rel="noopener">GitHub</a>
+  </div>
+</header>
+
+<div class="wrap hero">
+  <span class="badge">Professional EXIF Editor</span>
+  <h1>干净、现代的<br><span class="accent">图片元数据</span>读写工具</h1>
+  <p class="sub">纯 Python 桌面应用，基于 Tkinter 构建。批量读写 GPS 坐标、相机信息、曝光参数与拍摄时间，支持地图选点与 CSV 导出。</p>
+  <div class="cta">
+    <a class="btn-primary" href="https://github.com/yohoten/ExifCraft" target="_blank" rel="noopener">⭐ Star on GitHub</a>
+    <a class="btn-ghost" href="#start">快速开始 →</a>
+  </div>
+  <div class="shot">
+    <img src="preview.png" alt="ExifCraft 界面预览">
+  </div>
+</div>
+
+<section id="features">
+  <div class="wrap">
+    <h2>✨ 功能特性</h2>
+    <p class="lead">单文件应用，开箱即用</p>
+    <div class="grid">
+      <div class="card">
+        <div class="icon">📝</div>
+        <h3>EXIF 写入</h3>
+        <p>将 GPS 坐标（经度 / 纬度 / 海拔）、相机制造商与型号、焦距、光圈、ISO、拍摄时间写入 JPEG / TIFF / PNG 等格式图片。</p>
+      </div>
+      <div class="card">
+        <div class="icon">📖</div>
+        <h3>EXIF 读取</h3>
+        <p>选中列表中的文件，一键回填所有字段到表单，方便查看与修改现有元数据。</p>
+      </div>
+      <div class="card">
+        <div class="icon">⚡</div>
+        <h3>批量处理</h3>
+        <p>支持单文件或整个文件夹，后台线程处理不阻塞界面，实时进度条一目了然。</p>
+      </div>
+      <div class="card">
+        <div class="icon">📍</div>
+        <h3>地图选点</h3>
+        <p>集成 tkintermapview，在地图上点击即可拾取 GPS 坐标，无需手动查经纬度。</p>
+      </div>
+      <div class="card">
+        <div class="icon">📊</div>
+        <h3>CSV 导出</h3>
+        <p>一键将文件夹内所有图片的 EXIF 摘要导出为 CSV 表格，便于整理与归档。</p>
+      </div>
+      <div class="card">
+        <div class="icon">🛡️</div>
+        <h3>安全写回</h3>
+        <p>默认输出 <code>*_exif</code> 副本不修改原图；也可勾选原地覆盖，由你决定。</p>
+      </div>
+      <div class="card">
+        <div class="icon">🎨</div>
+        <h3>现代 UI</h3>
+        <p>浅色卡片式界面，跨平台 ttk 主题，Windows 下自动启用 HiDPI 适配。</p>
+      </div>
+      <div class="card">
+        <div class="icon">✅</div>
+        <h3>输入校验</h3>
+        <p>经纬度范围、数值格式、日期格式全部前端校验，错误信息清晰直观。</p>
+      </div>
+      <div class="card">
+        <div class="icon">📅</div>
+        <h3>日期选择器</h3>
+        <p>集成 tkcalendar 日历控件，拍摄日期点选即得，告别手动输入格式。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="start" style="background: var(--surface-2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+  <div class="wrap">
+    <h2>🚀 快速开始</h2>
+    <p class="lead">Python 3.10+ 即可运行</p>
+    <div class="code">
+      <span class="c"># 安装依赖</span><br>
+      pip install -r requirements.txt<br><br>
+      <span class="c"># 运行（.pyw 双击即可启动，无控制台窗口）</span><br>
+      python <span class="p">ExifCraft.pyw</span><br><br>
+      <span class="c"># 打包为独立可执行文件（可选）</span><br>
+      pyinstaller --onefile --windowed --icon ExifCraft.ico <span class="p">ExifCraft.pyw</span>
+    </div>
+  </div>
+</section>
+
+<section id="usage">
+  <div class="wrap">
+    <h2>📖 使用说明</h2>
+    <p class="lead">三步完成 EXIF 写入</p>
+    <div class="steps">
+      <div class="step">
+        <span class="n">1</span>
+        <p><strong>选择图片</strong> — 点击 File 选择单张图片，或点击 Folder 选择整个文件夹，自动扫描其中的图片。</p>
+      </div>
+      <div class="step">
+        <span class="n">2</span>
+        <p><strong>填写参数</strong> — 相机信息（如 Nikon Z6 II）、曝光参数、拍摄时间与 GPS 坐标；也可先点击 Read EXIF 读取现有元数据回填表单。</p>
+      </div>
+      <div class="step">
+        <span class="n">3</span>
+        <p><strong>写入</strong> — 点击 Write EXIF。默认生成 <code>&lt;原文件名&gt;_exif</code> 副本（JPEG 以 quality=100 保存），勾选 Overwrite 可原地覆盖。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p><a href="https://github.com/yohoten/ExifCraft" target="_blank" rel="noopener">ExifCraft</a> · Professional EXIF Editor · v2.1</p>
+    <p style="margin-top:6px;">MIT License © 2026 yohoten</p>
+  </div>
+</footer>
+
+</body>
+</html>
