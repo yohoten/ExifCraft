@@ -26,6 +26,25 @@ APP_NAME  = "ExifCraft"
 ENTRY     = "ExifCraft.pyw"
 ICON      = "ExifCraft.ico"
 
+MIN_PY = (3, 10)   # source uses `X | None` annotations — 3.9 exe would crash at startup
+
+
+def check_env() -> None:
+    """Fail fast with a readable message instead of a PyInstaller traceback."""
+    if sys.version_info < MIN_PY:
+        raise SystemExit(
+            f"[error] Python {MIN_PY[0]}.{MIN_PY[1]}+ required, "
+            f"you are running {sys.version.split()[0]}.\n"
+            f"        Recreate the venv, e.g.:  py -3.12 -m venv .venv"
+        )
+    try:
+        import PyInstaller  # noqa: F401
+    except ImportError:
+        raise SystemExit(
+            "[error] PyInstaller is not installed in this environment.\n"
+            "        Fix:  pip install pyinstaller"
+        )
+
 # ---- read version from the source file ----------------------------------
 def read_version() -> str:
     with open(ENTRY, encoding="utf-8") as fp:
@@ -81,6 +100,7 @@ def main() -> None:
                         help="skip creating the zip bundle")
     args = parser.parse_args()
 
+    check_env()
     print(f"[build] {APP_NAME} v{VERSION}")
     clean()
     run_pyinstaller()
